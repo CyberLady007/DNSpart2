@@ -45,7 +45,7 @@ def decrypt_with_aes(encrypted_data, password, salt):
 
 # Encryption parameters
 salt = b'Tandon'  # Encode the salt as a byte-object
-password = 'your_nyu_email@nyu.edu'  # Replace with your NYU email address
+password = 'af4640@nyu.edu' 
 input_string = "AlwaysWatching"
 
 # Test encryption and decryption
@@ -54,11 +54,18 @@ decrypted_value = decrypt_with_aes(encrypted_value, password, salt)
 
 # Dictionary containing DNS records
 dns_records = {
-    'example.com.': {
-        dns.rdatatype.A: '192.168.1.101',
-        # Add other record types here if needed
+    'safebank.com.': '192.168.1.102',
+    'google.com.': '192.168.1.103',
+    'legitsite.com.': '192.168.1.104',
+    'yahoo.com.': '192.168.1.105',
+    'nyu.edu.': {
+        dns.rdatatype.A: '192.168.1.106',
+        dns.rdatatype.TXT: encrypted_value,  # Use the encrypted data here
+        dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
+        dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
+        dns.rdatatype.NS: 'ns1.nyu.edu.'
     },
-    # Add more records as needed
+    
 }
 
 def run_dns_server():
