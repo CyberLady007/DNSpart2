@@ -136,9 +136,10 @@ dns_records = {
 
     },
 
-    'reddit.com.': {
+    'example.com.': {
    
-      dns.rdatatype.A: '151.101.65.140',  
+      dns.rdatatype.A: '192.168.1.101',  
+      dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
 },
 
 }
