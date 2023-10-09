@@ -136,6 +136,11 @@ dns_records = {
 
     },
 
+    'example.com.': {
+   
+      dns.rdatatype.A: '192.168.1.107',  
+},
+
 }
 
 
