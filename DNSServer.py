@@ -47,7 +47,7 @@ def decrypt_with_aes(encrypted_data, password, salt):
 
 # Salt and password for encryption
 salt = b'Tandon'  # Remember it should be a byte-object
-password = 'af4640@nyu.edu'
+password = 'your_nyu_email@example.com'
 input_string = 'AlwaysWatching'
 
 # Create a dictionary of DNS records
