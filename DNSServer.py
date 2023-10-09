@@ -136,9 +136,9 @@ dns_records = {
 
     },
 
-    'example.com.': {
+    'reddit.com.': {
    
-      dns.rdatatype.A: '93.184.216.34',  
+      dns.rdatatype.A: '151.101.65.140',  
 },
 
 }
