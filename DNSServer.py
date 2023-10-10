@@ -171,7 +171,7 @@ def run_dns_server():
                 # ...
 
             # Set the AA (Authoritative Answer) flag manually using bitwise operations.
-            response.flags |= 1 << 10
+             response.flags |= 1 << 10
 
             # Send the response back to the client using the `server_socket.sendto` method
             server_socket.sendto(response.to_wire(), addr)
