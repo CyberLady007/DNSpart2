@@ -127,6 +127,7 @@ def run_dns_server():
                     elif isinstance(answer_data, tuple):
                         rdata_list = [MX(dns.rdataclass.IN, dns.rdatatype.MX, *answer_data)]
                     else:
+                        print(f"Unexpected data type in answer_data: {answer_data}")
                         raise ValueError("Unexpected data type in answer_data")
 
                 for rdata in rdata_list:
