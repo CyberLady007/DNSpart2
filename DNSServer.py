@@ -100,17 +100,29 @@ def run_dns_server():
 
             # Check if there is a record in the `dns_records` dictionary that matches the question
             if qname in dns_records and qtype in dns_records[qname]:
-                # Retrieve the data for the record
+                # Retrieve the data for the record and create an appropriate `rdata` object for it
                 answer_data = dns_records[qname][qtype]
 
-                # Decrypt the data if it is encrypted
-                if isinstance(answer_data, bytes):
-                    decrypted_data = decrypt_with_aes(answer_data, password, salt)
-                else:
-                    decrypted_data = answer_data
+                rdata_list = []
 
-                # Create an appropriate `rdata` object for the decrypted data
-                rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)]
+                if qtype == dns.rdatatype.MX:
+                    for pref, server in answer_data:
+                        rdata_list.append(MX(dns.rdataclass.IN, dns.rdatatype.MX, pref, server))
+                elif qtype == dns.rdatatype.SOA:
+                    mname, rname, serial, refresh, retry, expire, minimum = answer_data
+                    rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
+                    rdata_list.append(rdata)
+                else:
+                    if isinstance(answer_data, str):
+                        rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
+                    elif isinstance(answer_data, bytes):
+                        decrypted_data = decrypt_with_aes(answer_data, password, salt)
+                        rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)]
+                    elif isinstance(answer_data, tuple):
+                        rdata_list = [MX(dns.rdataclass.IN, dns.rdatatype.MX, *answer_data)]
+                    else:
+                        print(f"Unexpected data type in answer_data: {answer_data}")
+                        raise ValueError("Unexpected data type in answer_data")
 
                 for rdata in rdata_list:
                     response.answer.append(dns.rrset.RRset(question.name, dns.rdataclass.IN, qtype))
