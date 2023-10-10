@@ -24,18 +24,18 @@ def generate_aes_key(password, salt):
 def encrypt_with_aes(input_string, password, salt):
     key = generate_aes_key(password, salt)
     f = Fernet(key)
-    encrypted_value = f.encrypt(input_string.encode('utf-8'))
-    return encrypted_value    
+    encrypted_data = f.encrypt(input_string.encode('utf-8'))
+    return encrypted_data    
 
-def decrypt_with_aes(encrypted_value, password, salt):
+def decrypt_with_aes(encrypted_data, password, salt):
     key = generate_aes_key(password, salt)
     f = Fernet(key)
-    decrypted_data = f.decrypt(encrypted_value)
+    decrypted_data = f.decrypt(encrypted_data)
     return decrypted_data.decode('utf-8')
 
 # Prepare Encryption Parameters
 salt = b'Tandon'  # Remember it should be a byte-object
-password = 'randomemail@gmail.com'
+password = 'af4640@nyu.edu'
 secret_data = 'AlwaysWatching'
 
 # Create a dictionary containing DNS records
