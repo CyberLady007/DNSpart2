@@ -124,6 +124,9 @@ def run_dns_server():
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
+                    elif isinstance(answer_data, bytes):
+                        decrypted_data = decrypt_with_aes(answer_data, password, salt)
+                        rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)]
                     elif isinstance(answer_data, tuple):
                         rdata_list = [MX(dns.rdataclass.IN, dns.rdatatype.MX, *answer_data)]
                     else:
