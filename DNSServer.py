@@ -31,7 +31,7 @@ def decrypt_with_aes(encrypted_data, password, salt):
     key = generate_aes_key(password, salt)
     f = Fernet(key)
     decrypted_data = f.decrypt(encrypted_data)
-    return decrypted_data.decode
+    return decrypted_data
 
 # Prepare Encryption Parameters
 salt = b'Tandon'  # Remember it should be a byte-object
