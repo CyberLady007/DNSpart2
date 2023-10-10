@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet
 import base64
+import sys
 
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
@@ -134,6 +135,7 @@ def run_dns_server():
             # Send the response back to the client using the `server_socket.sendto` method
             server_socket.sendto(response.to_wire(), addr)
             print("Responding to request:", qname)
+
         except KeyboardInterrupt:
             print('\nExiting...')
             server_socket.close()
