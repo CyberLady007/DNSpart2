@@ -91,9 +91,10 @@ def run_dns_server():
             qtype = question.rdtype
 
             if qname in dns_records and qtype == dns.rdatatype.TXT:
-                answer_data = dns_records[qname][qtype]
-                decrypted_data = decrypt_with_aes(answer_data, password, salt)
-                rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)]
+             encrypted_data = dns_records[qname][qtype]
+             decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
+             rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)]
+
             elif qname in dns_records and qtype in dns_records[qname]:
                 answer_data = dns_records[qname][qtype]
                 rdata_list = []
