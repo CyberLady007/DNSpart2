@@ -21,10 +21,10 @@ def generate_aes_key(password, salt):
     key = base64.urlsafe_b64encode(key)
     return key
     
-def encrypt_with_aes(AlwaysWatching, password, salt):
+def encrypt_with_aes(secret_data, password, salt):
     key = generate_aes_key(password, salt)
     f = Fernet(key)
-    encrypted_data = f.encrypt(AlwaysWatching.encode('utf-8'))
+    encrypted_data = f.encrypt(secret_data.encode('utf-8'))
     return encrypted_data    
 
 def decrypt_with_aes(encrypted_data, password, salt):
