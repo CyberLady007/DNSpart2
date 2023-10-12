@@ -104,14 +104,22 @@ def run_dns_server():
                         rdata_list.append(MX(dns.rdataclass.IN, dns.rdatatype.MX, pref, server))
                 elif qtype == dns.rdatatype.SOA:
                     mname, rname, serial, refresh, retry, expire, minimum = answer_data
-                    rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
+                    rdata = SOA(dns.rrdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
                     rdata_list.append(rdata)
+                elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
+                    # Access the encrypted data
+                    encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
+
+                    # Decrypt the data
+                    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
+
+                    # Create a TXT record with the decrypted data
+                    txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
+
+                    rdata_list.append(txt_record)
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
-                    elif isinstance(answer_data, bytes):
-                        decrypted_data = decrypt_with_aes(answer_data, password, salt)
-                        rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)]
 
                 for rdata in rdata_list:
                     response.answer.append(dns.rrset.RRset(question.name, dns.rdataclass.IN, qtype))
