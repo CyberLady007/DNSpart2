@@ -150,7 +150,7 @@ def run_dns_server_user():
     input_thread = threading.Thread(target=user_input)
     input_thread.daemon = True
     input_thread.start()
-    run_dns_server()
+    
 
 if __name__ == '__main__':
     run_dns_server_user()
