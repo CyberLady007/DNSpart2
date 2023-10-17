@@ -22,7 +22,7 @@ import hashlib
 
 # Set encryption parameters
 salt = b'Tandon'
-password = 'af4640@nyu.edu'
+password = '<your_nyu_email>'
 input_string = 'AlwaysWatching'
 
 def generate_aes_key(password, salt):
