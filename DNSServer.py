@@ -78,10 +78,10 @@ salt = b'Tandon'  # Remember it should be a byte-object
 
 password = 'af4640@nyu.edu'
 
-secret_data = 'AlwaysWatching'
+input_string = 'AlwaysWatching'
 
 
-encrypted_value = encrypt_with_aes(secret_data, password, salt) # test function
+encrypted_value = encrypt_with_aes(input_string, password, salt) # test function
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # test function
 
 
@@ -117,7 +117,7 @@ dns_records = {
 
         dns.rdatatype.A: '192.168.1.106',
 
-        dns.rdatatype.TXT: encrypt_with_aes(secret_data, password, salt),
+        dns.rdatatype.TXT: encrypt_with_aes(input_string, password, salt),
 
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
 
