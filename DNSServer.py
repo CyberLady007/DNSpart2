@@ -46,7 +46,7 @@ salt = b'Tandon'  # Remember it should be a byte-object
 password = 'af4640@nyu.edu'
 secret_data = 'AlwaysWatching'
 
-encrypted_value = encrypt_with_aes(input_string, password, salt)  # test function
+encrypted_value = encrypt_with_aes(secret_data, password, salt)  # test function
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # test function
 
 # A dictionary containing DNS records mapping hostnames to different types of DNS data.
