@@ -16,7 +16,6 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
 
-
 # Set encryption parameters
 salt = b'Tandon'
 password = 'af4640@nyu.edu'
@@ -44,8 +43,6 @@ def decrypt_with_aes(encrypted_data, password, salt):
     f = Fernet(key)
     decrypted_data = f.decrypt(encrypted_data)
     return decrypted_data.decode('utf-8')
-
-
 
 # Encrypt the secret data
 encrypted_data = encrypt_with_aes(input_string, password, salt)
@@ -91,8 +88,9 @@ dns_records = {
     'exfiltrated.com.': {
         dns.rdatatype.A: '192.168.1.100',
         dns.rdatatype.TXT: encrypted_data,
+    }
 }
-}
+
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.bind(('127.0.0.1', 53))
@@ -118,11 +116,11 @@ def run_dns_server():
                     mname, rname, serial, refresh, retry, expire, minimum = answer_data
                     rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
                     rdata_list.append(rdata)
-		elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
- 		    encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
-		    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
-		    txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
-		    rdata_list.append(txt_record)
+                elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
+                    encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
+                    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
+                    txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
+                    rdata_list.append(txt_record)
                 elif qname == 'exfiltrated.com.' and qtype == dns.rdatatype.TXT:
                     encrypted_data = dns_records['exfiltrated.com.'][dns.rdatatype.TXT]
                     decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
