@@ -44,6 +44,8 @@ def decrypt_with_aes(encrypted_data, password, salt):
 
 # Encrypt the secret data
 encrypted_value = encrypt_with_aes(input_string, password, salt)
+decrypted_value = decrypt_with_aes(encrypted_value, password, salt)
+
 
 # Define DNS records including an exfiltration record
 dns_records = {
