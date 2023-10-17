@@ -9,13 +9,11 @@ import threading
 import signal
 import os
 import sys
-
 import hashlib
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
-import ast
 
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
@@ -27,12 +25,12 @@ def generate_aes_key(password, salt):
     key = kdf.derive(password.encode('utf-8'))
     key = base64.urlsafe_b64encode(key)
     return key
-    
+
 def encrypt_with_aes(input_string, password, salt):
     key = generate_aes_key(password, salt)
     f = Fernet(key)
     encrypted_data = f.encrypt(input_string.encode('utf-8'))
-    return encrypted_data    
+    return encrypted_data
 
 def decrypt_with_aes(encrypted_data, password, salt):
     key = generate_aes_key(password, salt)
@@ -41,14 +39,13 @@ def decrypt_with_aes(encrypted_data, password, salt):
     return decrypted_data.decode('utf-8')
 
 # Prepare Encryption Parameters
-
 salt = b'Tandon'  # Remember it should be a byte-object
 password = 'af4640@nyu.edu'
-
 secret_data = 'AlwaysWatching'
 
-encrypted_value = encrypt_with_aes(secret_data, password, salt) # test function
-decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # test function
+# Test the encryption and decryption functions
+encrypted_value = encrypt_with_aes(secret_data, password, salt)
+decrypted_value = decrypt_with_aes(encrypted_value, password, salt)
 
 # Create a dictionary containing DNS records
 dns_records = {
@@ -79,13 +76,13 @@ dns_records = {
         dns.rdatatype.NS: 'ns.example.com.',
         dns.rdatatype.TXT: ('This is a TXT record',),
         dns.rdatatype.SOA: (
-            'ns1.example.com.', #mname
-            'admin.example.com.', #rname
-            2023081401, #serial
-            3600, #refresh
-            1800, #retry
-            604800, #expire
-            86400, #minimum
+            'ns1.example.com.',  # mname
+            'admin.example.com.',  # rname
+            2023081401,  # serial
+            3600,  # refresh
+            1800,  # retry
+            604800,  # expire
+            86400,  # minimum
         ),
     },
 }
@@ -93,7 +90,6 @@ dns_records = {
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.bind(('127.0.0.1', 53))
-
     while True:
         try:
             data, addr = server_socket.recvfrom(1024)
@@ -102,11 +98,9 @@ def run_dns_server():
             question = request.question[0]
             qname = question.name.to_text()
             qtype = question.rdtype
-
             if qname in dns_records and qtype in dns_records[qname]:
                 answer_data = dns_records[qname][qtype]
                 rdata_list = []
-
                 if qtype == dns.rdatatype.MX:
                     for pref, server in answer_data:
                         rdata_list.append(MX(dns.rdataclass.IN, dns.rdatatype.MX, pref, server))
@@ -122,15 +116,12 @@ def run_dns_server():
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
-
                 for rdata in rdata_list:
                     response.answer.append(dns.rrset.RRset(question.name, dns.rdataclass.IN, qtype))
                     response.answer[-1].add(rdata)
-
             response.flags |= 1 << 10
             server_socket.sendto(response.to_wire(), addr)
             print("Responding to request:", qname)
-
         except KeyboardInterrupt:
             print('\nExiting...')
             server_socket.close()
@@ -139,18 +130,16 @@ def run_dns_server():
 def run_dns_server_user():
     print("Input 'q' and hit 'enter' to quit")
     print("DNS server is running...")
-
     def user_input():
         while True:
             cmd = input()
             if cmd.lower() == 'q':
                 print('Quitting...')
                 os.kill(os.getpid(), signal.SIGINT)
-
     input_thread = threading.Thread(target=user_input)
     input_thread.daemon = True
     input_thread.start()
-    
+    run_dns_server()
 
 if __name__ == '__main__':
     run_dns_server_user()
