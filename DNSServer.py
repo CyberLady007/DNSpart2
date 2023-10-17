@@ -9,12 +9,10 @@ import threading
 import signal
 import os
 import sys
-import hashlib
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
-import ast
 
 # Set encryption parameters
 salt = b'Tandon'
@@ -63,7 +61,7 @@ dns_records = {
     },
     'nyu.edu.': {
          dns.rdatatype.A: '192.168.1.106',
-         dns.rdatatype.TXT: encrypt_with_aes(input_string, password, salt).decode('utf-8'),  # Convert to string
+         dns.rdatatype.TXT: encrypted_data,  # Store the encrypted data as bytes
          dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
          dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
          dns.rdatatype.NS: 'ns1.nyu.edu.',
@@ -85,9 +83,7 @@ dns_records = {
             86400,  # minimum
         ),
     },
-    
-    }
-
+}
 
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -115,7 +111,7 @@ def run_dns_server():
                     rdata_list.append(rdata)
                 elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
                     encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
-                    decrypted_data = decrypt_with_aes(encrypted_data.encode('utf-8'), password, salt)
+                    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
                     rdata_list.append(txt_record)
                 else:
