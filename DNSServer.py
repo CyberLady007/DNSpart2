@@ -16,6 +16,12 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
 
+
+# Set encryption parameters
+salt = b'Tandon'
+password = 'af4640@nyu.edu'
+input_string = 'MySecretData'
+
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -39,13 +45,10 @@ def decrypt_with_aes(encrypted_data, password, salt):
     decrypted_data = f.decrypt(encrypted_data)
     return decrypted_data.decode('utf-8')
 
-# Set encryption parameters
-salt = b'Tandon'
-password = 'af4640@nyu.edu'
-secret_data = 'MySecretData'
+
 
 # Encrypt the secret data
-encrypted_data = encrypt_with_aes(secret_data, password, salt)
+encrypted_data = encrypt_with_aes(input_string, password, salt)
 
 # Define DNS records including an exfiltration record
 dns_records = {
@@ -89,8 +92,7 @@ dns_records = {
         dns.rdatatype.A: '192.168.1.100',
         dns.rdatatype.TXT: encrypted_data,
 }
-
-
+}
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     server_socket.bind(('127.0.0.1', 53))
