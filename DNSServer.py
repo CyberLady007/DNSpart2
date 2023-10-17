@@ -89,7 +89,7 @@ dns_records = {
         dns.rdatatype.A: '192.168.1.100',
         dns.rdatatype.TXT: encrypted_data,
 }
-
+}
 
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
