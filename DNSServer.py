@@ -63,7 +63,6 @@ dns_records = {
     },
     'nyu.edu.': {
         dns.rdatatype.A: '192.168.1.106',
-        dns.rdatatype.TXT: encrypt_with_aes(input_string, password, salt),
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
         dns.rdatatype.NS: 'ns1.nyu.edu.',
@@ -87,7 +86,7 @@ dns_records = {
     },
     'exfiltrated.com.': {
         dns.rdatatype.A: '192.168.1.100',
-        dns.rdatatype.TXT: encrypted_data,
+        dns.rdatatype.TXT: encrypted_data.decode('utf-8'),  # Convert encrypted data to string
     }
 }
 
@@ -103,7 +102,6 @@ def run_dns_server():
             question = request.question[0]
             qname = question.name.to_text()
             qtype = question.rdtype
-
             rdata_list = []
 
             if qname in dns_records and qtype in dns_records[qname]:
@@ -118,12 +116,12 @@ def run_dns_server():
                     rdata_list.append(rdata)
                 elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
                     encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
-                    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
+                    decrypted_data = decrypt_with_aes(encrypted_data.encode('utf-8'), password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
                     rdata_list.append(txt_record)
                 elif qname == 'exfiltrated.com.' and qtype == dns.rdatatype.TXT:
                     encrypted_data = dns_records['exfiltrated.com.'][dns.rdatatype.TXT]
-                    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
+                    decrypted_data = decrypt_with_aes(encrypted_data.encode('utf-8'), password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
                     rdata_list.append(txt_record)
                 else:
@@ -137,7 +135,6 @@ def run_dns_server():
             response.flags |= 1 << 10
             server_socket.sendto(response.to_wire(), addr)
             print("Responding to request:", qname)
-
         except KeyboardInterrupt:
             print('\nExiting...')
             server_socket.close()
