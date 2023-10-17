@@ -43,7 +43,7 @@ def decrypt_with_aes(encrypted_data, password, salt):
     return decrypted_data.decode('utf-8')
 
 # Encrypt the secret data
-encrypted_data = encrypt_with_aes(input_string, password, salt)
+encrypted_data = b'encrypt_with_aes(input_string, password, salt)'
 decrypted_value = decrypt_with_aes(encrypted_data, password, salt)
 
 
