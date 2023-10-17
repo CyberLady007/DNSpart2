@@ -19,7 +19,7 @@ import ast
 # Set encryption parameters
 salt = b'Tandon'
 password = 'af4640@nyu.edu'
-input_string = 'MySecretData'
+input_string = 'AlwaysWatching'
 
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
@@ -62,10 +62,11 @@ dns_records = {
         dns.rdatatype.A: '192.168.1.105',
     },
     'nyu.edu.': {
-        dns.rdatatype.A: '192.168.1.106',
-        dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
-        dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
-        dns.rdatatype.NS: 'ns1.nyu.edu.',
+         dns.rdatatype.A: '192.168.1.106',
+         dns.rdatatype.TXT: encrypt_with_aes(input_string, password, salt).decode('utf-8'),  # Convert to string
+         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
+         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
+         dns.rdatatype.NS: 'ns1.nyu.edu.',
     },
     'example.com.': {
         dns.rdatatype.A: '192.168.1.101',
@@ -84,11 +85,9 @@ dns_records = {
             86400,  # minimum
         ),
     },
-    'exfiltrated.com.': {
-        dns.rdatatype.A: '192.168.1.100',
-        dns.rdatatype.TXT: encrypted_data.decode('utf-8'),  # Convert encrypted data to string
+    
     }
-}
+
 
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -116,11 +115,6 @@ def run_dns_server():
                     rdata_list.append(rdata)
                 elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
                     encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
-                    decrypted_data = decrypt_with_aes(encrypted_data.encode('utf-8'), password, salt)
-                    txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
-                    rdata_list.append(txt_record)
-                elif qname == 'exfiltrated.com.' and qtype == dns.rdatatype.TXT:
-                    encrypted_data = dns_records['exfiltrated.com.'][dns.rdatatype.TXT]
                     decrypted_data = decrypt_with_aes(encrypted_data.encode('utf-8'), password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
                     rdata_list.append(txt_record)
