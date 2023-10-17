@@ -122,6 +122,8 @@ def run_dns_server():
                     rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
                     rdata_list.append(rdata)
                 elif qname == 'nyu.edu.' and qtype == dns.rdatatype.TXT:
+                    password = 'af4640@nyu.edu'
+                    salt = b'Tandon'
                     encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
                     decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
@@ -161,4 +163,5 @@ def run_dns_server_user():
     run_dns_server()
 
 if __name__ == '__main__':
+    
     run_dns_server_user()
