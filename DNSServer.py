@@ -13,6 +13,8 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
+import hashlib
+
 
 # Set encryption parameters
 salt = b'Tandon'
@@ -43,7 +45,13 @@ def decrypt_with_aes(encrypted_data, password, salt):
     return decrypted_data.decode('utf-8')
 
 # Encrypt the secret data
-encrypted_data = encrypt_with_aes(input_string, password, salt)
+encrypted_value = encrypt_with_aes(input_string, password, salt) # test function
+decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # test function
+
+def generate_sha256_hash(input_string):
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(input_string.encode('utf-8'))
+    return sha256_hash.hexdigest()
 
 # Define DNS records including an exfiltration record
 dns_records = {
@@ -61,7 +69,7 @@ dns_records = {
     },
     'nyu.edu.': {
          dns.rdatatype.A: '192.168.1.106',
-         dns.rdatatype.TXT: encrypted_data,  # Store the encrypted data as bytes
+         dns.rdatatype.TXT: encrypted_value,  # Store the encrypted data as bytes
          dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
          dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
          dns.rdatatype.NS: 'ns1.nyu.edu.',
