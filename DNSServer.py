@@ -137,7 +137,7 @@ def run_dns_server():
                     response.answer[-1].add(rdata)
 
             # Set the response flags
-            response.flags |= 1 << 10
+           
 
             # Send the response back to the client using the `server_socket.sendto` method and put the response to_wire(), return to the addr you received from
             print("Responding to request:", qname)
