@@ -110,37 +110,30 @@ def run_dns_server():
             if qname in dns_records and qtype in dns_records[qname]:
                 answer_data = dns_records[qname][qtype]
 
-                if qtype == dns.rdatatype.A:
-                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
-                elif qtype == dns.rdatatype.AAAA:
-                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
-                elif qtype == dns.rdatatype.MX:
+                if qtype == dns.rdatatype.MX:
                     for pref, server in answer_data:
                         rdata_list.append(MX(dns.rdataclass.IN, dns.rdatatype.MX, pref, server))
-                elif qtype == dns.rdatatype.CNAME:
-                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
-                elif qtype == dns.rdatatype.NS:
-                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
-                elif qtype == dns.rdatatype.TXT:
-                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
                 elif qtype == dns.rdatatype.SOA:
                     mname, rname, serial, refresh, retry, expire, minimum = answer_data
                     rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
                     rdata_list.append(rdata)
-
-                for rdata in rdata_list:
-                    response.answer.append(dns.rrset.RRset(question.name, dns.rdataclass.IN, qtype))
-                    response.answer[-1].add(rdata)
+                elif qtype == dns.rdatatype.TXT:
+                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
+                    rdata_list.append(txt_record)
+                elif qname == 'nyu.edu.' and qtype == dns.rdatatype.SOA:
+                    encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
+                    decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
+                    txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
+                    rdata_list.append(txt_record)
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
                     else:
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, data) for data in answer_data]
+
+                for rdata in rdata_list:
+                    response.answer.append(dns.rrset.RRset(question.name, dns.rdataclass.IN, qtype))
+                    response.answer[-1].add(rdata)
 
             response.flags |= 1 << 10
             server_socket.sendto(response.to_wire(), addr)
