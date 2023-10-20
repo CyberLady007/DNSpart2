@@ -120,18 +120,18 @@ def run_dns_server():
                 elif qtype == dns.rdatatype.TXT:
                     rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
                     rdata_list.append(rdata)
-                elif qname == 'nyu.edu.' and qtype == dns.rdatatype.SOA:
+            elif qname == 'nyu.edu.' and qtype == dns.rdatatype.SOA:
                     encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
                     decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
                     rdata_list.append(txt_record)
-                else:
+            else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
                     else:
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, data) for data in answer_data]
 
-                for rdata in rdata_list:
+            for rdata in rdata_list:
                     response.answer.append(dns.rrset.RRset(question.name, dns.rdataclass.IN, qtype))
                     response.answer[-1].add(rdata)
 
