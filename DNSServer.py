@@ -119,10 +119,8 @@ def run_dns_server():
                     rdata_list.append(rdata)
                 elif qtype == dns.rdatatype.TXT:
                     rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
+                    rdata_list.append(txt_record)
                 elif qname == 'nyu.edu.' and qtype == dns.rdatatype.SOA:
-                    password = 'af4640@nyu.edu'
-                    salt = b'Tandon'
                     encrypted_data = dns_records['nyu.edu.'][dns.rdatatype.TXT]
                     decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
