@@ -1,8 +1,6 @@
 import dns.message
 import dns.rdatatype
 import dns.rdataclass
-import dns.rdtypes
-import dns.rdtypes.ANY
 from dns.rdtypes.ANY.MX import MX
 from dns.rdtypes.ANY.SOA import SOA
 import dns.rdata
@@ -17,8 +15,6 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
-import hashlib
-
 
 # Set encryption parameters
 salt = b'Tandon'
@@ -49,8 +45,8 @@ def decrypt_with_aes(encrypted_data, password, salt):
     return decrypted_data.decode('utf-8')
 
 # Encrypt the secret data
-encrypted_value = encrypt_with_aes(input_string, password, salt) # test function
-decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # test function
+encrypted_value = encrypt_with_aes(input_string, password, salt)
+decrypted_value = decrypt_with_aes(encrypted_value, password, salt)
 
 def generate_sha256_hash(input_string):
     sha256_hash = hashlib.sha256()
@@ -72,11 +68,11 @@ dns_records = {
         dns.rdatatype.A: '192.168.1.105',
     },
     'nyu.edu.': {
-         dns.rdatatype.A: '192.168.1.106',
-         dns.rdatatype.TXT: encrypted_value,  # Store the encrypted data as bytes
-         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
-         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
-         dns.rdatatype.NS: 'ns1.nyu.edu.',
+        dns.rdatatype.A: '192.168.1.106',
+        dns.rdatatype.TXT: encrypted_value,
+        dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],
+        dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',
+        dns.rdatatype.NS: 'ns1.nyu.edu.',
     },
     'example.com.': {
         dns.rdatatype.A: '192.168.1.101',
@@ -121,6 +117,9 @@ def run_dns_server():
                     mname, rname, serial, refresh, retry, expire, minimum = answer_data
                     rdata = SOA(dns.rdataclass.IN, dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)
                     rdata_list.append(rdata)
+                elif qtype == dns.rdatatype.TXT:
+                    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
+                    rdata_list.append(rdata)
                 elif qname == 'nyu.edu.' and qtype == dns.rdatatype.SOA:
                     password = 'af4640@nyu.edu'
                     salt = b'Tandon'
@@ -128,10 +127,6 @@ def run_dns_server():
                     decrypted_data = decrypt_with_aes(encrypted_data, password, salt)
                     txt_record = dns.rdata.from_text(dns.rdataclass.IN, qtype, decrypted_data)
                     rdata_list.append(txt_record)
-		elif qtype == dns.rdatatype.TXT:
-      			  # Handle TXT record
-        	    rdata = dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)
-                    rdata_list.append(rdata)
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
@@ -167,5 +162,4 @@ def run_dns_server_user():
     run_dns_server()
 
 if __name__ == '__main__':
-    
     run_dns_server_user()
