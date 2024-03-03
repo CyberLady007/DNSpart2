@@ -9,7 +9,6 @@ import threading
 import signal
 import os
 import sys
-
 import hashlib
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
@@ -87,7 +86,7 @@ dns_records = {
 
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind(('127.0.0.1', 53))
+    server_socket.bind(('127.0.0.1', 8053))  # Change the port to 8053
 
     while True:
         try:
