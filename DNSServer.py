@@ -86,7 +86,7 @@ dns_records = {
 
 def run_dns_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_socket.bind(('127.0.0.1', 8054))  # Change to a different available port
+    server_socket.bind(('127.0.0.1', 53))
 
     while True:
         try:
